@@ -58,9 +58,9 @@ namespace ToDoApp.Controllers
             var result = await _signInManager.PasswordSignInAsync(model.Name, model.Password,isPersistent:false, lockoutOnFailure:false);
             if (result.Succeeded)
             {
-                return View("Login successful");
+                return RedirectToAction("Index", "Home");
             }
-            return View("Login unsuccessful");
+            return View();
         }
 
         [Authorize]
@@ -68,7 +68,7 @@ namespace ToDoApp.Controllers
         public async Task<IActionResult>Logout()
         {
             await _signInManager.SignOutAsync();
-            return View("Logout successful");
+            return RedirectToAction("Index", "Home");
         }
 
         [AllowAnonymous]
@@ -83,15 +83,15 @@ namespace ToDoApp.Controllers
             var user = await _userManager.FindByNameAsync(model.Name);
             if (user == null)
             {
-                return View("The user is not exsit");
+                return RedirectToAction("Index", "Home");
             }
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
             var result = await _userManager.ResetPasswordAsync(user, token,"1");
             if (result.Succeeded)
             {
-                return View("Reset Password successful");
+                return RedirectToAction("Index", "Home");
             }
-            return View("Reset Password unsuccessful");
+            return View();
         }
     }
 }

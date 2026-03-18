@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ToDoApp.Models;
 
@@ -21,12 +22,13 @@ namespace ToDoApp.Controllers
             _signInManager = signInManager;
         }
         // GET: TasksController
-        public async Task<IActionResult> GetAllTask()
+        [HttpGet("Tasks/TaskList")]
+        public async Task<IActionResult> GetAllTasks()
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                return NotFound();
+                return View();
             }
             var taskItem = await _appDbContext.TaskItems.Where(u => u.UserId == user.Id).ToListAsync();
             return View(taskItem);
@@ -43,20 +45,29 @@ namespace ToDoApp.Controllers
             var taskItem = await _appDbContext.TaskItems.Where(u => u.UserId == user.Id && u.Id == id).FirstOrDefaultAsync();
             return View(taskItem);
         }
+
+        [HttpGet]
+        public IActionResult Create()
+        {
+            ViewBag.Categories = new SelectList(_appDbContext.Categories, "Id", "CategoryName");
+            return View();
+        }
+
         // POST: TasksController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([FromBody] TaskItem taskItem)
+        public async Task<IActionResult> Create(TaskItem taskItem)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(ModelState);
-            }
+            //if (!ModelState.IsValid)
+            //{
+            //    ViewBag.Categories = new SelectList(_appDbContext.Categories, "Id", "CategoryName");
+            //    return View(taskItem);
+            //}
 
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                return Unauthorized();
+                return View();
             }
 
             var task = new TaskItem
@@ -72,7 +83,7 @@ namespace ToDoApp.Controllers
             _appDbContext.TaskItems.Add(task);
             await _appDbContext.SaveChangesAsync();
 
-            return View(task);
+            return RedirectToAction("Index", "Home");
         }
     }
 }

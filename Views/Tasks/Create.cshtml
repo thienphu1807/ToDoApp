@@ -1,0 +1,53 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using System.Security.Claims
+
+@model ToDoApp.Models.TaskItem
+
+@{
+    ViewData["Title"] = "Create Task";
+}
+@if (User?.Identity != null && User.Identity.IsAuthenticated)
+{
+    <h2>Create Task</h2>
+
+    <form asp-action="Create" method="post">
+        <div class="form-group">
+            <label asp-for="Title"></label>
+            <input asp-for="Title" class="form-control" />
+            <span asp-validation-for="Title" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Description"></label>
+            <textarea asp-for="Description" class="form-control"></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="DueDate"></label>
+            <input asp-for="DueDate" type="date" class="form-control" />
+            <span asp-validation-for="DueDate" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Priority"></label>
+            <select asp-for="Priority" class="form-control" asp-items="Html.GetEnumSelectList<ToDoApp.Models.Priority>()"></select>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Status"></label>
+            <select asp-for="Status" class="form-control" asp-items="Html.GetEnumSelectList<ToDoApp.Models.Status>()"></select>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="CategoriesId">Category</label>
+            <select asp-for="CategoriesId" class="form-control" asp-items="ViewBag.Categories"></select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Create</button>
+    </form>
+}
+else
+{
+    <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Please Login</a>
+}
