@@ -43,13 +43,13 @@ namespace ToDoApp.Controllers
         // POST: TasksController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(TaskItem taskItem)
+        public async Task<IActionResult> Create(TaskItemViewModel taskItem)
         {
-            //if (!ModelState.IsValid)
-            //{
-            //    ViewBag.Categories = new SelectList(_appDbContext.Categories, "Id", "CategoryName");
-            //    return View(taskItem);
-            //}
+            if (!ModelState.IsValid)
+            {
+                ViewBag.Categories = new SelectList(_appDbContext.Categories, "Id", "CategoryName");
+                return View(taskItem);
+            }
 
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
@@ -70,7 +70,7 @@ namespace ToDoApp.Controllers
             _appDbContext.TaskItems.Add(task);
             await _appDbContext.SaveChangesAsync();
 
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("TaskList");
         }
 
 
@@ -85,13 +85,13 @@ namespace ToDoApp.Controllers
         // POST: TasksController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(TaskItem taskItem)
+        public async Task<IActionResult> Edit(TaskItemViewModel taskItem)
         {
-            //if (!ModelState.IsValid)
-            //{
-            //    ViewBag.Categories = new SelectList(_appDbContext.Categories, "Id", "CategoryName");
-            //    return View(taskItem);
-            //}
+            if (!ModelState.IsValid)
+            {
+                ViewBag.Categories = new SelectList(_appDbContext.Categories, "Id", "CategoryName");
+                return View(taskItem);
+            }
 
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
@@ -122,12 +122,6 @@ namespace ToDoApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
-            //if (!ModelState.IsValid)
-            //{
-            //    ViewBag.Categories = new SelectList(_appDbContext.Categories, "Id", "CategoryName");
-            //    return View(taskItem);
-            //}
-
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {

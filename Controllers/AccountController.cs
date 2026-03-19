@@ -71,27 +71,28 @@ namespace ToDoApp.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        [AllowAnonymous]
+        [Authorize]
         [HttpPost]
-        public async Task<IActionResult> ResetPassword(LoginViewModel model)
+        public async Task<IActionResult> ResetPassword()
         {
-            if (!ModelState.IsValid)
+            if (!_signInManager.IsSignedIn(User))
             {
-                return View(ModelState);
+                return RedirectToAction("Index", "Home");
             }
-
-            var user = await _userManager.FindByNameAsync(model.Name);
+            var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
                 return RedirectToAction("Index", "Home");
             }
+
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            var result = await _userManager.ResetPasswordAsync(user, token,"1");
+            var result = await _userManager.ResetPasswordAsync(user, token,"Abc12345!");
             if (result.Succeeded)
             {
+                await _signInManager.SignOutAsync();
                 return RedirectToAction("Index", "Home");
             }
-            return View();
+            return RedirectToAction("Index", "Home");
         }
     }
 }
