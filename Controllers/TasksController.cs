@@ -30,7 +30,7 @@ namespace ToDoApp.Controllers
             {
                 return View();
             }
-            var taskItem = await _appDbContext.TaskItems.Where(u => u.UserId == user.Id).ToListAsync();
+            var taskItem = await _appDbContext.TaskItems.Where(u => u.UserId == user.Id).Include(c => c.Categories).ToListAsync();
             return View(taskItem);
         }
 
@@ -84,6 +84,82 @@ namespace ToDoApp.Controllers
             await _appDbContext.SaveChangesAsync();
 
             return RedirectToAction("Index", "Home");
+        }
+
+
+        [HttpGet]
+        public IActionResult Edit(int id)
+        {
+            ViewBag.Categories = new SelectList(_appDbContext.Categories, "Id", "CategoryName");
+            var taskItem = _appDbContext.TaskItems.FirstOrDefault(t => t.Id == id);
+            return View(taskItem);
+        }
+
+        // POST: TasksController/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(TaskItem taskItem)
+        {
+            //if (!ModelState.IsValid)
+            //{
+            //    ViewBag.Categories = new SelectList(_appDbContext.Categories, "Id", "CategoryName");
+            //    return View(taskItem);
+            //}
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return View();
+            }
+
+            var existingTask = await _appDbContext.TaskItems.FindAsync(taskItem.Id);
+            if (existingTask == null)
+            {
+                return View();
+            }
+
+            // Gán lại giá trị mới
+            existingTask.Title = taskItem.Title;
+            existingTask.Description = taskItem.Description;
+            existingTask.Status = taskItem.Status;
+            existingTask.Priority = taskItem.Priority;
+            existingTask.DueDate = taskItem.DueDate;
+            existingTask.CategoriesId = taskItem.CategoriesId;
+            existingTask.UserId = user.Id;
+
+            // EF tracking sẽ biết đây là update
+            _appDbContext.TaskItems.Update(existingTask);
+            await _appDbContext.SaveChangesAsync();
+
+            return RedirectToAction("TaskList");
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id)
+        {
+            //if (!ModelState.IsValid)
+            //{
+            //    ViewBag.Categories = new SelectList(_appDbContext.Categories, "Id", "CategoryName");
+            //    return View(taskItem);
+            //}
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return View();
+            }
+
+            var existingTask = await _appDbContext.TaskItems.FindAsync(id);
+            if (existingTask == null)
+            {
+                return View();
+            }
+
+            // EF tracking sẽ biết đây là update
+            _appDbContext.TaskItems.Remove(existingTask);
+            await _appDbContext.SaveChangesAsync();
+
+            return RedirectToAction("TaskList");
         }
     }
 }

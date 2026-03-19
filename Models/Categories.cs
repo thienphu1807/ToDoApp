@@ -9,5 +9,7 @@ namespace ToDoApp.Models
         [Required]
         public string CategoryName { get; set; }
 
+        public ICollection<TaskItem> TaskItems { get; set; }
+
     }
 }
