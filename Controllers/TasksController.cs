@@ -33,19 +33,6 @@ namespace ToDoApp.Controllers
             var taskItem = await _appDbContext.TaskItems.Where(u => u.UserId == user.Id).Include(c => c.Categories).ToListAsync();
             return View(taskItem);
         }
-
-        // GET: TasksController/Details/5
-        public async Task<IActionResult> Details(int id)
-        {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                return Unauthorized();
-            }
-            var taskItem = await _appDbContext.TaskItems.Where(u => u.UserId == user.Id && u.Id == id).FirstOrDefaultAsync();
-            return View(taskItem);
-        }
-
         [HttpGet]
         public IActionResult Create()
         {
@@ -118,7 +105,6 @@ namespace ToDoApp.Controllers
                 return View();
             }
 
-            // Gán lại giá trị mới
             existingTask.Title = taskItem.Title;
             existingTask.Description = taskItem.Description;
             existingTask.Status = taskItem.Status;
@@ -127,7 +113,6 @@ namespace ToDoApp.Controllers
             existingTask.CategoriesId = taskItem.CategoriesId;
             existingTask.UserId = user.Id;
 
-            // EF tracking sẽ biết đây là update
             _appDbContext.TaskItems.Update(existingTask);
             await _appDbContext.SaveChangesAsync();
 
@@ -155,7 +140,6 @@ namespace ToDoApp.Controllers
                 return View();
             }
 
-            // EF tracking sẽ biết đây là update
             _appDbContext.TaskItems.Remove(existingTask);
             await _appDbContext.SaveChangesAsync();
 

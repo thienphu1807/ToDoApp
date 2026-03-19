@@ -63,5 +63,59 @@ namespace ToDoApp.Controllers
 
             return RedirectToAction("Index", "Home");
         }
+
+        [HttpGet]
+        public IActionResult Edit(int id)
+        {
+            var category = _appDbContext.Categories.FirstOrDefault(t => t.Id == id);
+            return View(category);
+        }
+
+        // POST: TasksController/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(Categories categories)
+        {
+
+            var existingCategories = await _appDbContext.Categories.FindAsync(categories.Id);
+            if (existingCategories == null)
+            {
+                return View();
+            }
+
+            existingCategories.CategoryName = categories.CategoryName;
+
+            _appDbContext.Categories.Update(existingCategories);
+            await _appDbContext.SaveChangesAsync();
+
+            return RedirectToAction("GetAllCategories");
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id)
+        {
+            //if (!ModelState.IsValid)
+            //{
+            //    ViewBag.Categories = new SelectList(_appDbContext.Categories, "Id", "CategoryName");
+            //    return View(taskItem);
+            //}
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return View();
+            }
+
+            var existingCategories = await _appDbContext.Categories.FindAsync(id);
+            if (existingCategories == null)
+            {
+                return View();
+            }
+
+            _appDbContext.Categories.Remove(existingCategories);
+            await _appDbContext.SaveChangesAsync();
+
+            return RedirectToAction("GetAllCategories");
+        }
     }
 }

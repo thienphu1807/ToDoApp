@@ -8,8 +8,5 @@ namespace ToDoApp.Models
         public int Id { get; set; }
         [Required]
         public string CategoryName { get; set; }
-
-        public ICollection<TaskItem> TaskItems { get; set; }
-
     }
 }
