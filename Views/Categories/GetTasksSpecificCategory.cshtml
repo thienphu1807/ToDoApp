@@ -1,0 +1,72 @@
+﻿@model IEnumerable<ToDoApp.Models.TaskItem>
+
+@{
+    ViewData["Title"] = "Task List";
+}
+
+<h2>Task List</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Created Date</th>
+            <th>Due Date</th>
+            <th>Priority</th>
+            <th>Status</th>
+            <th>Category</th>
+            <th>User</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null && Model.Any())
+        {
+            @foreach (var task in Model)
+            {
+                <tr>
+                    <td>@task.Title</td>
+                    <td>@task.Description</td>
+                    <td>@task.CreatedDate.ToString("dd/MM/yyyy")</td>
+                    <td>@task.DueDate.ToString("dd/MM/yyyy")</td>
+                    <td>@task.Priority</td>
+                    <td>@task.Status</td>
+                    <td>@task.Categories?.CategoryName</td>
+                    <td>@task.User?.UserName</td>
+                    <td>
+                        <ul>
+                            <li>
+                                <form asp-controller="Tasks" asp-action="Edit" asp-route-id="@task.Id" method="get">
+                                    <button type="submit" class="btn btn-danger">Edit Task</button>
+                                </form>
+                            </li>
+                            <li>
+                                <form asp-controller="Tasks" asp-action="Delete" asp-route-id="@task.Id" method="post">
+                                    <button type="submit" class="btn btn-danger">Delete Task</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="8">No tasks available.</td>
+            </tr>
+        }
+    </tbody>
+</table>
+<div>
+    <tr class="navbar-nav flex-grow-1">
+        <td class="nav-item">
+            <a asp-controller="Tasks" asp-action="Create">Create Task</a>
+        </td>
+        <td class="nav-item">
+            <a asp-controller="Categories" asp-action="Create">Create Categories</a>
+        </td>
+    </tr>
+
+</div>

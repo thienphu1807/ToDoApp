@@ -31,6 +31,16 @@ namespace ToDoApp.Controllers
             var categories = await _appDbContext.Categories.ToListAsync();
             return View(categories);
         }
+        public async Task<IActionResult> GetTasksSpecificCategory(int id)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return View();
+            }
+            var categories = await _appDbContext.TaskItems.Where(u => u.UserId == user.Id && u.CategoriesId == id).Include(c => c.Categories).ToListAsync();
+            return View(categories);
+        }
 
         [HttpGet]
         public IActionResult Create()
